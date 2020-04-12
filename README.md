@@ -14,9 +14,11 @@ npm start
 
 That's it. The app will use concurrently to start React & the backend in parallel in one terminal window.
 
-You can test the chat with yourself by opening the url "localhost:3000" once more in a second tab (shortcut in Chrome: right-click on the browser tab -> duplicate). Then you step with two users into the same room.
+You can test the chat with yourself by opening the url "localhost:3000" once more in a second tab (shortcut in Chrome: right-click on the browser tab -> duplicate). Then you step with two users into the same room and start messaging.
 
-The app offers two chat rooms, switching rooms and sending messages to all room members.
+The app offers two chat rooms, switching rooms and sending messages to all room members. 
+
+You can add more rooms by adding rooms to the "rooms" state in App.js.
 
 ## About the app
 
