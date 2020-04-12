@@ -1,0 +1,75 @@
+.App {
+  text-align: center;
+  background-color: #282c34;
+  color: white;
+  min-height: 100vh;
+}
+
+.App-header {
+  height: 20vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-size: calc(10px + 2vmin);
+}
+
+main {
+  height: 65vh;
+}
+
+.errors { 
+  height: 10vh;
+  color: red; 
+  font-weight: bold;
+  text-align: right;
+  padding-right: 10px; 
+}
+
+footer {
+  height: 5vh;
+}
+
+.chat {
+  display: flex;
+  height: 100%;
+  /* border: 5px solid white; */
+}
+
+.chat-rooms {
+  flex-basis: 30%;
+  border: 2px solid white; 
+}
+
+.chat-rooms ul {
+  list-style-type: none;
+}
+
+.chat-history {
+  flex-basis: 70%;
+  border: 2px solid white; 
+
+  display: flex;
+  flex-direction: column;
+}
+
+.chat-history textarea {
+  width: 100%;
+  height: 90%;
+  color: white;
+  background-color: transparent;
+}
+
+.chat-message {
+  display: flex;
+}
+.chat-message button, .chat-message #user   {
+  flex-basis: 100px; 
+}
+.chat-message #message {
+  flex-grow: 1;
+}
+
+.App-link {
+  color: #61dafb;
+}
