@@ -47,9 +47,7 @@ Especially for the backend part you need to consider:
 * Allow just logged in users to participate in chat? (then you need to send tokens with your messages, e.g. JWT)
 * Store rooms, room users and chat history in database?
 
-Tipp: You can store the active chat room of a user directly in the user model.
-
-If you want users to join multiple chat rooms in parallel, you can store the rooms as array in the user model (=> field definition: chatRooms: [String])
+Tipp: If you just need direct messaging between users (1:1 chats) you can use direct messaging instead of rooms. Every user has a unique socket id (accessible by socket.id). If you know the socketID of another user, you can send messages to them in the backend by using: `io.to(socketId).emit("message", "some message")`. To get the socket id of a user you want to send a message to, you can store the socket id of a user in the users model (e.g. userSchema({...fields..., socketId: "socket-id-of-the-user"})). Then you can make this info available to other users, e.g. via a backend route /user to get information, including the socket-id, of another user.
 
 All information related to socket.io you can lookup in the official socket.io documentation where you find plently of code snippets.
 
