@@ -18,25 +18,25 @@ function App() {
       users: [ 'Admin' ]
     }
   ]);
-  // let [activeRoom, setActiveRoom] = useState(rooms[0])
   let [ activeRoom, setActiveRoom ] = useState();
   let [ error, setError ] = useState('');
 
-  // ref to input chat message
+  // define refs to grab values of input fields easily
   let inputMsg = useRef();
   let inputUser = useRef();
   let txtChat = useRef();
 
   // switch room in state
   const switchRoom = (room) => {
-    // join room centrally too
     let user = inputUser.current.value;
 
     if (user) {
       setActiveRoom(room);
+      console.log(`Switched room to ${room.title}`);
+
+      // join room in backend too
       socket.emit('joinRoom', { room: room.title, user });
       setError('');
-      console.log(`Switched room to ${room.title}`);
     } 
     else {
       console.log('Please provide a user name before joining');
@@ -65,29 +65,32 @@ function App() {
 
   // add received message to chat history of given room
   const addMessageToHistory = ({ msg, user, room }) => {
-    // find room
+
     console.log('Attaching message to room: ', room);
-    // update history state by creating a copy, update it & re-assign it
+
+    // update chat history by creating a copy of state, updating it & re-assign it
     let roomsCopy = [ ...rooms ];
+
+    // find room
     let roomFound = roomsCopy.find((currentRoom) => currentRoom.title == room);
 
     // add message to chat history array of given room
     if (roomFound) {
-      console.log('Adding message: ', msg);
       roomFound.history.push({ msg, user, room });
       setRooms(roomsCopy);
     }
   };
 
-  // connect to socket AFTER first render (=componentDidMount)
+  // define socket.io event listener
+  // AFTER first render ("componentDidMount")
   useEffect(() => {
+
     // on message receipt: add to state
     socket.on('message', (objMsg) => {
-      console.log('Socket ID: ', socket.id);
-      console.log('YAAA! Message received: ', objMsg);
+      console.log('Yay! Message received: ', objMsg);
       if (objMsg.user && objMsg.msg) {
         addMessageToHistory(objMsg);
-        // scroll to end of textarea
+        // scroll to last message (end of textarea)
         txtChat.current.scrollTop = txtChat.current.scrollHeight;
       }
     });
