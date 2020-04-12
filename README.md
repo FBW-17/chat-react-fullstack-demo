@@ -14,6 +14,10 @@ npm start
 
 That's it. The app will use concurrently to start React & the backend in parallel in one terminal window.
 
+You can test the chat with yourself by opening the url "localhost:3000" once more in a second tab (shortcut in Chrome: right-click on the browser tab -> duplicate). Then you step with two users into the same room.
+
+The app offers two chat rooms, switching rooms and sending messages to all room members.
+
 ## About the app
 
 Both frontend and backend just run LOCALLY (no central servers, etc)
@@ -38,7 +42,7 @@ We have the following limitations:
 So these parts you - probably - need to add in your real project.
 
 Especially for the backend part you need to consider:
-* Allow just logged in users to participate in chat? (then you need to send tokens with your messages)
+* Allow just logged in users to participate in chat? (then you need to send tokens with your messages, e.g. JWT)
 * Store rooms, room users and chat history in database?
 
 Tipp: You can store the active chat room of a user directly in the user model.
