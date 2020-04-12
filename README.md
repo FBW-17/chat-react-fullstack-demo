@@ -49,6 +49,12 @@ Especially for the backend part you need to consider:
 
 Tipp: If you just need direct messaging between users (1:1 chats) you can use direct messaging to a socket ID instead of rooms. Every user has a unique socket ID (accessible in the backend by socket.id). If you know the socketID of another user, you can send messages to them in the backend by using: `io.to(<socketId>).emit("message", "some message")`. To get the socket id of a user you want to send a message to, you can store the socket id of a user - once he connects to socket.io - in the users model (e.g. userSchema({...fields..., socketId: "socket-id-of-the-user"})). Then you can make this ID available to other users, e.g. via a backend route /user to get information of another user (but not the password please :)).
 
+## How to add JWT authentication
+
+You can add middleware to socket.io just like in express with use (so io.use())
+
+See an example in the [first answer to this StackOverflow question](https://stackoverflow.com/questions/36788831/authenticating-socket-io-connections-using-jwt) on how to add a JWT middleware in the backend and how to send a token along in the frontend.
+
 All information related to socket.io you can lookup in the official socket.io documentation where you find plently of code snippets.
 
 Happy chatting :)
