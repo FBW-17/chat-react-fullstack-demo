@@ -51,7 +51,7 @@ Tipp: If you just need direct messaging between users (1:1 chats) you can use di
 
 ## How to add JWT authentication
 
-You can add middleware to socket.io just like in express with use (so io.use())
+You can add middleware to socket.io just like in express with the "use" keyword (so we just need to use `io.use()` instead if `app.use()`)
 
 See an example in the [first answer to this StackOverflow question](https://stackoverflow.com/questions/36788831/authenticating-socket-io-connections-using-jwt) on how to add a JWT middleware in the backend and how to send a token along in the frontend.
 
