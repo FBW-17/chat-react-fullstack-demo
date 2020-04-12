@@ -24,11 +24,14 @@ The App uses these libraries to create the socket connection:
 
 The app is dedicated to show the integration of frontend and backend only and therefore has a simplied setup. 
 
-So it has these limitations:
+All relevant frontend code you find in: `chat-ui/src/App.js`
+All relevant backend code you find in: `server.js`.
+
+We have these limitations:
 * plain state management with useState (neither ContextAPI nor Redux)
 * no database in the backend
 
-So these parts you need to add in your real project.
+So these parts you - probably - need to add in your real project.
 
 Especially for the backend part you need to consider:
 * Allow just logged in users to participate in chat?
