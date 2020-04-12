@@ -16,7 +16,8 @@ function App() {
       { msg: "Hello to issue channel", user: "Admin" },
     ], users: ["Admin"]},
   ])
-  let [activeRoom, setActiveRoom] = useState(rooms[0])
+  // let [activeRoom, setActiveRoom] = useState(rooms[0])
+  let [activeRoom, setActiveRoom] = useState()
   let [error, setError] = useState("")
 
     // ref to input chat message
@@ -27,16 +28,33 @@ function App() {
 
     // switch room in state 
   const switchRoom = (room) => {
-    console.log(`Switched room to ${room.title}`)
-    setActiveRoom(room)
-    // TODO: join room centrally too
+    
+    // join room centrally too
+    let user = inputUser.current.value;
+
+    if(user) {
+      setActiveRoom(room)
+      socket.emit("joinRoom", {room: room.title, user})
+      setError("")
+      console.log(`Switched room to ${room.title}`)
+    }
+    else {
+      console.log("Please provide a user name before joining")
+      setError("Please provide a user name before joining")
+    }
   }
 
   // send message to currently active room
   const sendMessage = () => {
     let msg = inputMsg.current.value;
     let user = inputUser.current.value;
-    if(msg && user) {
+
+    if(!activeRoom) {
+      console.log("Please join a room first - and state a username")
+      setError("Please join a room first - and state a username")
+    }
+
+    else if(msg && user) {
       socket.emit("message", { msg, user, room: activeRoom.title })
       setError("")
     }
@@ -99,11 +117,11 @@ function App() {
             </ul>
           </div>
 					<div className="chat-history">
-            <div>{activeRoom.title ? activeRoom.title : "(no room active)" }</div>
+            <div>{activeRoom ? activeRoom.title : "(no room active)" }</div>
               <textarea 
                 autoComplete="off" placeholder="Chat messages..." 
                 readOnly ref={txtChat}
-              value={
+              value={activeRoom &&
                 activeRoom.history.map(entry => (
                   `${entry.user}: ${entry.msg}`
                 )).join("\n")

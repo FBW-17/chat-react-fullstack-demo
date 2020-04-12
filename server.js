@@ -82,8 +82,8 @@ io.on('connection', (socket) => {
     let response = { user, msg, room, private: false }
 
     if(room) {
-      io.emit("message", response)
-      // io.to(room).emit("message", { user: username, msg, room, private: false })
+      // io.emit("message", response)
+      io.to(room).emit("message", response)
     }
     // send private to single socket (=user)
     else if(userToId) {
@@ -91,8 +91,8 @@ io.on('connection', (socket) => {
     }
     // send just back to client who called
     else {
-      io.emit("message", { ... response, private: true })
-      // socket.emit("message", { user: username, msg, private: true })
+      //io.emit("message", { ... response, private: true })
+      socket.emit("message", { ...response, private: true })
     }
 
   });
@@ -107,16 +107,17 @@ io.on('connection', (socket) => {
   // })
 
     // EVENT to join current user to a room
-  socket.on("joinRoom", ({room, username}) => {
+  socket.on("joinRoom", ({room, user}) => {
 
     // leave current room that is assigned
     // socket.leaveAll()
 
     socket.join(room)
-    console.log(`User ${username} joined room ${room}, ID ${socket.id}`)
+
+    console.log(`User ${user} joined room ${room}, ID ${socket.id}`)
 
     // inform users in the room that a new user joined
-    io.to(room).emit("message", `User ${username} joined room ${room}`)
+    io.to(room).emit("message", `User ${user} joined room ${room}`)
   })
 
 });
