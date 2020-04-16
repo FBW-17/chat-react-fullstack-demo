@@ -8,12 +8,14 @@ function App() {
   // state: rooms with histories
   let [ rooms, setRooms ] = useState([
     {
-      title: 'Public',
-      history: [ { msg: 'Hello Irina', user: 'Rob' }, { msg: 'Hey Rob', user: 'Irina' } ],
+      title: 'Room 1',
+      history: [
+        { msg: 'Hello Irina', user: 'Rob' }, 
+        { msg: 'Hey Rob', user: 'Irina' } ],
       users: [ 'Rob', 'Irina' ]
     },
     {
-      title: 'Issues',
+      title: 'Room 2',
       history: [ { msg: 'Hello to issue channel', user: 'Admin' } ],
       users: [ 'Admin' ]
     }
@@ -30,7 +32,17 @@ function App() {
   const switchRoom = (room) => {
     let user = inputUser.current.value;
 
+    // do not switch to a room we are already in
+    if(activeRoom && room.title == activeRoom.title) {
+      return
+    }
+
     if (user) {
+
+      if(activeRoom) {
+        leaveRoom()
+      }
+
       setActiveRoom(room);
       console.log(`Switched room to ${room.title}`);
 
@@ -58,8 +70,11 @@ function App() {
       setError('Please provide username & message');
     } 
     else {
-      socket.emit('message', { msg, user, room: activeRoom.title });
+      let msgObj = { msg, user, room: activeRoom.title }
+      console.log("Sending: ", msgObj)
+      socket.emit('message', msgObj);
       setError('');
+      inputMsg.current.value = ""
     }
   };
 
@@ -81,20 +96,91 @@ function App() {
     }
   };
 
+  const updateUserListOfRoom = (room, users) => {
+    let roomsCopy = [...rooms]
+    let roomFound = roomsCopy.find((currentRoom) => currentRoom.title == room);
+    if(roomFound) {
+      roomFound.users = users
+    }
+    console.log("Updated users:", roomFound.users)
+    setRooms(roomsCopy)
+  }
+
+  const removeUserFromRoom = (room, username) => {
+    let roomsCopy = [...rooms]
+    let roomFound = roomsCopy.find((currentRoom) => currentRoom.title == room);
+    if(roomFound) {
+      roomFound.users = roomFound.users.filter(user => user.name != username)
+    }
+    console.log("Updated users after removal:", roomFound.users)
+    setRooms(roomsCopy)
+
+  }
+
+  const leaveRoom = () => {
+    socket.emit("leaveRoom", { room: activeRoom.title, user: inputUser.current.value})
+  }
+
+  useEffect(() => console.log("Rooms changed: ", rooms), [rooms])
+
   // define socket.io event listener
   // AFTER first render ("componentDidMount")
   useEffect(() => {
 
+    // receive rooms
+    socket.on("getRooms", (rooms) => {
+      // console.log("Rooms:", rooms)
+      setRooms(rooms)
+    })
+
+    // request rooms
+    socket.emit("getRooms")
+
+    return () => {
+      leaveRoom()
+    }
+
+  }, []);
+
+  // after a room was chosen => listen for messages in this room
+  useEffect(() => {
+
+    console.log("Active Room changed: ", activeRoom)
+
+    // clear message event listeners & recreate them
+    let arrListeners = ['message', 'userList', 'removeUser']
+    arrListeners.forEach(listenerName => {
+      if(socket.hasListeners(listenerName)) {
+          socket.removeEventListener(listenerName)
+      }
+    })
+
     // on message receipt: add to state
     socket.on('message', (objMsg) => {
       console.log('Yay! Message received: ', objMsg);
+
       if (objMsg.user && objMsg.msg) {
         addMessageToHistory(objMsg);
         // scroll to last message (end of textarea)
         txtChat.current.scrollTop = txtChat.current.scrollHeight;
       }
     });
-  }, []);
+
+    // socket.on("addUser", ({room, user}) => { 
+    //   console.log("AddUser: ", room, user)
+    //   addUserToRoom(room, user)
+    // })
+    socket.on("userList", ({room, users}) => { 
+      console.log("Users updated: ", room, users)
+      updateUserListOfRoom(room, users)
+    })
+    socket.on("removeUser", ({room, user}) => {
+      console.log("removeUser: ", room, user)
+      removeUserFromRoom(room, user)
+    })
+
+  }, [activeRoom])
+  
 
   // UI rendering
   return (
@@ -127,7 +213,11 @@ function App() {
               }
             />
             <div className="chat-message">
-              <input placeholder="Username..." autoComplete="off" type="text" id="user" ref={inputUser} />
+              <input placeholder="Username..." 
+                autoComplete="off" 
+                type="text" 
+                id="user" defaultValue="Rob" 
+                ref={inputUser} />
               <input
                 placeholder="Write your message here..."
                 autoComplete="off"
@@ -137,6 +227,14 @@ function App() {
               />
               <button onClick={sendMessage}>Send</button>
             </div>
+          </div>
+          <div className="chat-users">
+            <div className="chat-users-title">Users</div>
+            <ul>
+              {activeRoom && activeRoom.users.map((user) => (
+                <li key={user.name}>{user.name}</li>
+              ))}
+            </ul>
           </div>
         </div>
       </main>

@@ -37,15 +37,30 @@ footer {
   /* border: 5px solid white; */
 }
 
-.chat-rooms {
-  flex-basis: 30%;
+.chat-rooms, .chat-history, .chat-users {
   border: 2px solid white; 
   display: flex;
   flex-direction: column;
 }
 
-.chat-rooms-title, .active-room-title {
-  border-bottom: 1px solid white;  
+.chat-rooms-title, .active-room-title, .chat-users-title {
+  border-bottom: 1px solid white;
+}
+
+.chat-rooms {
+  flex-basis: 20%;
+}
+
+.chat-history {
+  flex-basis: 60%;
+}
+
+.chat-users {
+  flex-basis: 20%;
+}
+
+.chat-rooms ul li {
+  padding: 15px;
 }
 
 .chat-rooms ul {
@@ -56,18 +71,6 @@ footer {
   display: flex;
   flex-direction: column;
   justify-content: space-evenly;
-}
-
-.chat-rooms ul li {
-  padding: 15px;
-}
-
-.chat-history {
-  flex-basis: 70%;
-  border: 2px solid white; 
-
-  display: flex;
-  flex-direction: column;
 }
 
 .chat-history textarea {
