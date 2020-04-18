@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import './App.css';
 import io from 'socket.io-client';
 
-let socket = io(process.env.NODE_ENV === "production" ? ':80' : ':8000');
+let socket = io(process.env.NODE_ENV === "production" ? undefined : ':8000');
 
 function App() {
   // state: rooms with histories
