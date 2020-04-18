@@ -3,17 +3,28 @@ const validator = require("express-validator")
 const { User, Room } = require('./models/index')
 const jwt = require("jsonwebtoken")
 const app = express()
+const port = process.env.PORT || 8000
 
 const jwtSecret = process.env.JWT_SECRET || 'holy-chat-secret'
 const jwtExpiry = process.env.JWT_EXPIRY || '4h'
 
-
 // app.listen returns an instance of HTTP Server
-const port = process.env.PORT || 8000
 const server = app.listen(port, () => console.log("started " + port));
 // we need to pass an HTTP server (not an express app!) to socket.io
 // it will then attach its own routes to that server
 const io = require('socket.io')(server);
+
+
+// if we are in production - load react app on homepage
+if(process.env.NODE_ENV === "production") {
+  app.use(express.static(__dirname + '/chat-ui/build'));
+}
+// in development - load test route
+else {
+  app.get('/', (req, res) => {
+    res.send('Hello from Socket.io API!');
+  });
+}
 
 const verifyToken = (req, res, next) => {
 
@@ -29,13 +40,10 @@ const verifyToken = (req, res, next) => {
   }
 }
 
-app.get('/', (req, res) => {
-  res.send('Hello from Socket.io API!');
-});
-
 app.get('/secret', verifyToken, (req, res) => {
   res.send("Hello, this route is token protected")
 })
+
 
 app.post("/signup", (req, res) => {
 
@@ -193,6 +201,10 @@ io.on('connection', (socket) => {
       if(!userFound) {       
         // add user + his socket-id to room in database
         roomDoc.users.push(newUser)  
+      }
+      // update socket-id of user
+      else {
+        userFound.socketId = socket.id
       }
 
       roomDoc.save().then((roomDocUpdated) => {

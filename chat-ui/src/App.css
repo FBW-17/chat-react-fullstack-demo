@@ -43,6 +43,11 @@ footer {
   flex-direction: column;
 }
 
+.chat-rooms .active-room-li {
+  font-weight: bold;
+  font-size: 1.25em;
+}
+
 .chat-rooms-title, .active-room-title, .chat-users-title {
   border-bottom: 1px solid white;
 }

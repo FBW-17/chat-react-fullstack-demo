@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import './App.css';
 import io from 'socket.io-client';
 
-let socket = io(':8000');
+let socket = io(process.env.NODE_ENV === "production" ? ':80' : ':8000');
 
 function App() {
   // state: rooms with histories
@@ -114,11 +114,11 @@ function App() {
     }
     console.log("Updated users after removal:", roomFound.users)
     setRooms(roomsCopy)
-
   }
 
   const leaveRoom = () => {
     socket.emit("leaveRoom", { room: activeRoom.title, user: inputUser.current.value})
+    setActiveRoom()
   }
 
   useEffect(() => console.log("Rooms changed: ", rooms), [rooms])
@@ -194,11 +194,16 @@ function App() {
             <div className="chat-rooms-title">Rooms</div>
             <ul>
               {rooms.map((room) => (
-                <li key={room.title} onClick={(e) => switchRoom(room)}>
+                <li className={activeRoom && room.title == activeRoom.title ? "active-room-li" : ""} key={room.title} onClick={(e) => switchRoom(room)}>
                   {room.title}
                 </li>
               ))}
             </ul>
+            {activeRoom && (
+            <div>
+              <button onClick={leaveRoom} >{`Leave ${activeRoom.title}`}</button>
+            </div>
+            )}
           </div>
           <div className="chat-history">
             <div className="active-room-title">{activeRoom ? activeRoom.title : '(no room active)'}</div>

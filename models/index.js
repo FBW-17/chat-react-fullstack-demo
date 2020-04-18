@@ -1,7 +1,14 @@
 const mongoose = require("mongoose")
 const Schema = mongoose.Schema
 
-const mongoUri = process.env.MONGODB_URI || "mongodb://localhost/chat_db"
+// load env vars in development
+if(process.env.NODE_ENV !== "production") {
+    require("dotenv").config()
+}
+
+console.log("Node Env: ", process.env.NODE_ENV)
+
+const mongoUri = process.env.MONGODB_URI //|| "mongodb://localhost/chat_db"
 mongoose.connect(mongoUri)
 .then(() => console.log("MongoDB connection succesful"))
 .catch(err => console.log(err.message))
