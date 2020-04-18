@@ -89,8 +89,9 @@ footer {
 .chat-message {
   display: flex;
 }
-.chat-message button, .chat-message #user   {
-  flex-basis: 100px; 
+.chat-message button,
+.chat-message #user {
+  flex-basis: 80px;
 }
 .chat-message #message {
   flex-grow: 1;

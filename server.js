@@ -9,7 +9,7 @@ const jwtSecret = process.env.JWT_SECRET || 'holy-chat-secret'
 const jwtExpiry = process.env.JWT_EXPIRY || '4h'
 
 // app.listen returns an instance of HTTP Server
-const server = app.listen(port, () => console.log("started " + port));
+const server = app.listen(port, () => console.log("Server started on port:" + port));
 // we need to pass an HTTP server (not an express app!) to socket.io
 // it will then attach its own routes to that server
 const io = require('socket.io')(server);
@@ -43,7 +43,6 @@ const verifyToken = (req, res, next) => {
 app.get('/secret', verifyToken, (req, res) => {
   res.send("Hello, this route is token protected")
 })
-
 
 app.post("/signup", (req, res) => {
 
@@ -82,6 +81,11 @@ app.post("/login", (req, res) => {
 
 })
 
+
+// TODO: Make route protected to admin user
+app.get("/rooms", (req, res) => {
+  Room.find().then(rooms => res.send(rooms))
+})
 
 app.get("/rooms/clear", (req, res) => {
   Room.deleteMany({}).then(
@@ -129,32 +133,26 @@ io.on('connection', (socket) => {
       return
     }
 
-    // print some info for debugging in server terminal
-    if(room) {
-      console.log(`Room ${room} ${user}: ${msg} `)
-    }
-    else if(userToId) {
-      console.log(`${user} to ${userToId}: ${msg} `)
-    }
-    else {
-      console.log(`Anonymous Message received: ${msg}`)
-    }
-    
-
     // broadcast message to a party (either room or to one person only)
-    let response = { user, msg, room, private: false }
+    let response = { user, msg, room, direct: false }
 
-    // broadcast to all members of given room
-    if(room) {
-      io.to(room).emit("message", response)
-    }
     // send private to single socket (=user)
-    else if(userToId) {
-      io.to(userToId).emit("message", { ... response, private: true })
+    if(userToId) {
+      console.log(`${user} to ${userToId}: ${msg} `)
+      // send message to dedicated user
+      io.to(userToId).emit("message", { ... response, direct: true })
+      // send message to sending user too
+      io.to(socket.id).emit("message", { ... response, direct: true })
+    }
+    // broadcast to all members of given room
+    else if(room) {
+      console.log(`Room ${room} ${user}: ${msg} `)
+      io.to(room).emit("message", response)
     }
     // send just back to the client who called
     else {
-      socket.emit("message", { ...response, private: true })
+      console.log(`Anonymous Message received: ${msg}`)
+      socket.emit("message", { ...response, direct: true })
     }
 
   });
@@ -221,7 +219,7 @@ io.on('connection', (socket) => {
           user: "Admin",
           msg: `User ${user} joined room ${room}`,
           room,
-          private: false
+          direct: false
         }
         console.log(response)
         io.to(room).emit("message", response)
@@ -256,7 +254,7 @@ io.on('connection', (socket) => {
           user: "Admin",
           msg: `User ${user} left the room ${room}`,
           room,
-          private: false
+          direct: false
         }
         console.log(response)
         io.to(room).emit("message", response)
@@ -266,6 +264,18 @@ io.on('connection', (socket) => {
         socket.leave(room)
       })
 
+    })
+  })
+
+  socket.on("clearRoom", (room) => {
+    Room.findOne({title: room}).then(roomFound => {
+      roomFound.users = []
+      roomFound.save().then((roomUpdated) => {
+        console.log(`Cleared all users in room ${room}`)
+        // inform users final about clearing :)
+        io.to(room).emit("userList", {room, users: []})
+
+      })
     })
   })
 
