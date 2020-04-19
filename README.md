@@ -3,7 +3,10 @@
 This app is a demo of a chat fullstack application using React for the UI
 and Socket.io / Express on the backend.
 
+Live Demo on GitHub Pages: [https://fbw-17.github.io/chat-react-fullstack-demo/](https://fbw-17.github.io/chat-react-fullstack-demo/)
+
 Live Demo on Heroku: [https://robchat-fullstack.herokuapp.com](https://robchat-fullstack.herokuapp.com)
+(caution: Heroku is typically slow on first page load)
 
 The app was deployed to Heroku following the process outlined in this video:<br />
 [MERN Stack Fullstack Deployment Heroku](https://www.youtube.com/watch?v=5PaUiPyBDJY)
