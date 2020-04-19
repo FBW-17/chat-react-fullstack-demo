@@ -6,10 +6,12 @@ if(process.env.NODE_ENV !== "production") {
     require("dotenv").config()
 }
 
-console.log("Node Env: ", process.env.NODE_ENV)
+console.log("Node Env: ", process.env.NODE_ENV || "development")
 
 const mongoUri = process.env.MONGODB_URI //|| "mongodb://localhost/chat_db"
-mongoose.connect(mongoUri)
+mongoose.connect(mongoUri, { 
+    useNewUrlParser: true, useUnifiedTopology: true, 
+})
 .then(() => console.log("MongoDB connection succesful"))
 .catch(err => console.log(err.message))
 
