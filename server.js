@@ -93,26 +93,25 @@ app.get("/rooms/clear", (req, res) => {
   )
 })
 
-// seed in 
-app.get("/rooms/seed", (req, res) => {
-
+// seed in initial rooms (if not existing)
+const seedRooms = () => {
   Room.countDocuments().then(amount => {
+  
+      // seed in rooms if there arent any
+      if(amount == 0) {
+        Room.create([
+           {title: "General", users: [], history: []},
+           {title: "Issues", users: [], history: []},
+        ]).then(rooms => console.log("Created initial rooms: ", rooms))
+      }
+      else {
+        console.log("Rooms in chat database: ", amount)
+      }
+    })
+}
 
-    // seed in rooms if there arent any
-    if(amount == 0) {
-      Room.create([
-         {title: "General", users: [], history: []},
-         {title: "Issues", users: [], history: []},
-      ]).then(rooms =>  res.send(rooms))
-    }
-    else {
-      res.send("Rooms already created")
-    }
-
-  })
-
-})
-
+// perform seeding
+seedRooms()
 
 // setup connection and events
 io.on('connection', (socket) => {

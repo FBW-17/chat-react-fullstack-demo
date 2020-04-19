@@ -8,7 +8,7 @@ if(process.env.NODE_ENV !== "production") {
 
 console.log("Node Env: ", process.env.NODE_ENV || "development")
 
-const mongoUri = process.env.MONGODB_URI //|| "mongodb://localhost/chat_db"
+const mongoUri = process.env.MONGODB_URI || "mongodb://localhost/chat_db"
 mongoose.connect(mongoUri, { 
     useNewUrlParser: true, useUnifiedTopology: true, 
 })
