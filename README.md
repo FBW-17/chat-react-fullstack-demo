@@ -33,15 +33,11 @@ The app offers two chat rooms, switching rooms and sending messages to all room 
 
 ## About the app
 
-Both frontend and backend just run LOCALLY (no central servers, etc)
-
 The App uses these libraries to create the socket connection:
 * backend: socket.io package to setup a socket.io server
 * frontend: socket.io-client package to connect from React
 
-The backend will create a database "chat-db" in your local mongodb when starting up.
-
-The app is dedicated to show the **integration of frontend and backend only** and therefore has a simplied setup.
+The app is dedicated to show the **integration of frontend and backend only** and therefore has a simplified setup.
 
 All relevant frontend code you find in: `chat-ui/src/App.js`
 
@@ -53,6 +49,7 @@ We have the following limitations:
 
 * state: plain state management with useState (neither ContextAPI nor Redux)
 * no authentication when sending chat messages
+* no responsiveness
 
 Especially for the backend part you need to consider:
 * Allow just logged in users to participate in chat? (then you need to send tokens with your messages, e.g. JWT)
