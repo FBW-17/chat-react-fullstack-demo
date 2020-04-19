@@ -3,8 +3,9 @@ import './App.css';
 import io from 'socket.io-client';
 
 // connect to socket IO port depending on environment
-let socketIoPort = process.env.NODE_ENV === "production" ? undefined : ':8000'
-let socket = io(socketIoPort);
+let apiBaseUrl = process.env.REACT_APP_API_BASEURL
+// let socketIoPort = process.env.NODE_ENV === "production" ? undefined : ':8000'
+let socket = io(apiBaseUrl);
 
 function App() {
 
