@@ -119,11 +119,11 @@ io.on('connection', (socket) => {
 
   console.log("Somebody connected! ", socket.id)
 
-  // listen to incoming messages
-  // and broadcast it to a room / user
+  // listen to incoming messages and broadcast them to a room 
+  // or send to user directly
   socket.on('message', (objMsg) => {
 
-    let {room, user, userToId, msg} = objMsg
+    let {room, user, userToId, userToName, msg} = objMsg
 
     // log the message we received
     console.log(objMsg)
@@ -134,7 +134,7 @@ io.on('connection', (socket) => {
     }
 
     // broadcast message to a party (either room or to one person only)
-    let response = { user, msg, room, direct: false }
+    let response = { user, msg, userToName, room, direct: false }
 
     // send private to single socket (=user)
     if(userToId) {

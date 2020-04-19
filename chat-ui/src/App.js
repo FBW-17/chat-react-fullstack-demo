@@ -71,7 +71,11 @@ function App() {
   const sendMessage = () => {
     let msg = inputMsg.current.value;
     let user = inputUser.current.value;
+
+    // get user to information
     let userToId = inputUserTo.current.value
+    let userToIndex = inputUserTo.current.selectedIndex
+    let userToName = inputUserTo.current.options[userToIndex].text
 
     if (!activeRoom) {
       console.log('Please join a room first - and state a username');
@@ -82,10 +86,18 @@ function App() {
       setError('Please provide username & message');
     } 
     else {
-      let msgObj = { msg, user, room: activeRoom.title, userToId }
+      let msgObj = { msg, user, room: activeRoom.title }
+
+      // direct message? append user-to information
+      if(userToId) {
+        msgObj = { ...msgObj, userToId, userToName }
+      }
+      
       console.log(`Sending ${userToId ? "(private)" : ""}: `, msgObj)
+      
       socket.emit('message', msgObj);
       setError('');
+      
       inputMsg.current.value = ""
     }
   };
@@ -105,6 +117,19 @@ function App() {
       setRooms(roomsCopy);
     }
   };
+
+  const formatMessage = (objMsg) => {
+    let msgFormatted = objMsg.user // start message with sender username
+
+    // format direct messages with info who sent message to whom
+    if(objMsg.direct) {
+      let userMe = inputUser.current.value
+      msgFormatted += " (private to " +
+        (userMe === objMsg.userToName ? "you" : objMsg.userToName) + ")"
+    }
+    msgFormatted += ": " + objMsg.msg
+    return msgFormatted
+  }
 
   const updateOtherUserList = () => {
     if(!activeRoom) return
@@ -194,11 +219,9 @@ function App() {
     socket.on('message', (objMsg) => {
       console.log('Yay! Message received: ', objMsg);
 
-      if (objMsg.user && objMsg.msg) {
-        addMessageToHistory(objMsg);
-        // scroll to last message (end of textarea)
-        txtChat.current.scrollTop = txtChat.current.scrollHeight;
-      }
+      addMessageToHistory(objMsg);
+      // scroll to last message (end of textarea)
+      txtChat.current.scrollTop = txtChat.current.scrollHeight;
     });
 
     socket.on("userList", ({room, users}) => { 
@@ -253,9 +276,7 @@ function App() {
               ref={txtChat}
               value={
                 activeRoom ?
-                activeRoom.history.map((entry) => (
-                  `${entry.user}${entry.direct ? " (private)":""}: ${entry.msg}`)
-                ).join('\n')
+                activeRoom.history.map((objMsg) => formatMessage(objMsg)).join('\n')
                 : ""
               }
             />
@@ -267,7 +288,7 @@ function App() {
                 ref={inputUser} />
               {activeRoom && (
                 <>
-                <select ref={inputUserTo}>
+                <select ref={inputUserTo} onChange={(e) => (e)}>
                   {otherUsers && otherUsers.map(otherUser => (
                     <option value={otherUser.socketId} >{otherUser.name}</option>
                   ))}
@@ -292,8 +313,8 @@ function App() {
               ))}
             </ul>
             {activeRoom && (
-            <div>
-              <button onClick={clearRoom} >{`Kick out all users}`}</button>
+            <div className="chat-users-kickout">
+              <button onClick={clearRoom} >Kick out all users</button>
             </div>
             )}
           </div>

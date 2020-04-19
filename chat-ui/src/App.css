@@ -38,9 +38,16 @@ footer {
 }
 
 .chat-rooms, .chat-history, .chat-users {
-  border: 2px solid white; 
+  border: 2px solid white;
   display: flex;
   flex-direction: column;
+}
+
+.chat-users ul {
+  flex-grow: 1;
+}
+
+.chat-users .chat-users-kickout {
 }
 
 .chat-rooms .active-room-li {
